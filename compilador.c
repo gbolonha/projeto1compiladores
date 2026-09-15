@@ -9,6 +9,44 @@ typedef struct{
 }TInfoAtomo;
 
 
+char *strAtomo[] = {"Erro lexico", "Constante Numerica", "Identificador","*", "+","Fim de buffer"};
+
+typedef enum {
+    // palavras reservadas
+    ALGORITMO, CARACTERE, DIV, E, ENQUANTO, ENTAO, ESCREVA, FACA, FALSO,
+    FIM, FUNCAO, INICIO, INTEIRO, LEIA, LOGICO, MOD, OU,
+    PROCEDIMENTO, SE, SENAO, VAR, VERDADEIRO,
+
+    // pontuação / delimitadores
+    PONTO_VIRGULA,   // ;
+    PONTO,           // .
+    VIRGULA,         // ,
+    DOIS_PONTOS,     // :
+    ABRE_PAR,        // (
+    FECHA_PAR,       // )
+
+    // operadores
+    ATRIBUICAO,      // :=
+    MENOR,           // <
+    MENOR_IGUAL,     // <=
+    MAIOR,           // >
+    MAIOR_IGUAL,     // >=
+    IGUAL,           // =
+    DIFERENTE,       // <>
+    MAIS,            // +
+    MENOS,           // -
+    MULT,            // *
+
+    // categorias especiais
+    IDENTIFICADOR,
+    CONSTINT,
+    CONSTCHAR,
+    COMENTARIO,
+
+    // controle
+    FIM_ARQUIVO
+} TAtomo;
+
 
 
 TInfoAtomo obter_atomo(); // implementado no analisador léxico
@@ -24,14 +62,16 @@ int main()
 
 //analise sintatica
 
-void consome( char atomo ){
-  if( lookahead == atomo )
-    lookahead =*buffer++; // obter_atomo();
-  else{
-    printf("erro sintatico: esperado [%c] encontrado
-    [%c]\n",atomo,lookahead);
-    exit(1);
-  }
+void consome( TAtomo atomo ){
+    if( lookahead == atomo ){
+        info_atomo = obter_atomo();
+        lookahead = info_atomo.atomo;
+    }
+    else{
+        // tratador de erros
+        printf("Erro sintatico: esperado [%s] encontrado [%s]\n",strAtomo[atomo],strAtomo[lookahead]);
+        exit(1);
+    }
 }
 
 //<programa> ::= algoritmo identificador ‘;’ <bloco> ‘.’
