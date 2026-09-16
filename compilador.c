@@ -1,15 +1,5 @@
-typedef struct{
-  TAtomo atomo;
-  int linha;
-  union{
-    int numero; // atributo do átomo constint (constante inteira)
-    char id[16]; // atributo identificador
-    char ch; // atributo do átomo constchar (constante caractere)
-  }atributo;
-}TInfoAtomo;
-
-
-char *strAtomo[] = {"Erro lexico", "Constante Numerica", "Identificador","*", "+","Fim de buffer"};
+TInfoAtomo info_atomo;
+TAtomo lookahead;
 
 typedef enum {
     // palavras reservadas
@@ -48,6 +38,21 @@ typedef enum {
 } TAtomo;
 
 
+typedef struct{
+  TAtomo atomo;
+  int linha;
+  union{
+    int numero; // atributo do átomo constint (constante inteira)
+    char id[16]; // atributo identificador
+    char ch; // atributo do átomo constchar (constante caractere)
+  }atributo;
+}TInfoAtomo;
+
+
+char *strAtomo[] = {"Erro lexico", "Constante Numerica", "Identificador","*", "+","Fim de buffer"};
+
+
+
 
 TInfoAtomo obter_atomo(); // implementado no analisador léxico
 void consome(TAtomo atomo); // implementado no analisador sintático
@@ -78,11 +83,11 @@ void consome( TAtomo atomo ){
 
 void programa()
 {
-  consome('algoritmo');
-  consome('identificador');
-  consome(';');
+  consome(ALGORITMO);
+  consome(IDENTIFICADOR);
+  consome(PONTO_VIRGULA);
   bloco();
-  consome('.');
+  consome(PONTO);
 }
 
 //<bloco> ::= <declaração_variáveis> <declaração_de_rotinas> <comando_composto>
@@ -96,15 +101,15 @@ void bloco()
 //<declaração_variáveis> ::= [ var <lista_variaveis> ‘;’ { <lista_variaveis> ‘;’ } ]
 void declaracao_variaveis()
 {
-    if (lookahead=='var')
+    if (lookahead==VAR)
     {
-        consome('var')
+        consome(VAR)
         lista_variaveis();
-        consome(';')
-        while (lookahead=='identificador')
+        consome(PONTO_VIRGULA)
+        while (lookahead==IDENTIFICADOR)
         {
             lista_variaveis();
-            consome(';');
+            consome(PONTO_VIRGULA);
         }
     }
 }
@@ -112,13 +117,13 @@ void declaracao_variaveis()
 //<lista_variaveis> ::= identificador { ‘,’ identificador } ‘:’ <tipo>
 void lista_variaveis()
 {
-    consome('identificador');
-    while(lookahead==',')
+    consome(IDENTIFICADOR);
+    while(lookahead==PONTO_VIRGULA)
     {
-        consome(',');
-        consome('identificador');
+        consome(VIRGULA);
+        consome(IDENTIFICADOR);
     }
-    consome(':');
+    consome(DOIS_PONTOS);
     tipo();
 }
 
@@ -126,16 +131,16 @@ void lista_variaveis()
 //<declaracao_de_rotinas> ::= { <declaração_de_função>|<declaração_de_procedimento> }
 void declaracao_de_rotinas()
 {
-    if(lookahead=='funcao')
+    if(lookahead==FUNCAO)
     {
-        while (lookahead=='funcao')
+        while (lookahead==FUNCAO)
         {
             declaração_de_função();
         }
     }
-    else if (lookahead=='procedimento')
+    else if (lookahead==PROCEDIMENTO)
     {
-        while (lookahead=='procedimento')
+        while (lookahead==PROCEDIMENTO)
         {
             declaracao_de_procedimento();
         }
@@ -144,11 +149,11 @@ void declaracao_de_rotinas()
 
 
 //<declaração_de_função> ::= funcao <tipo> identificador <parametros_formais> <declaracao_de_variaveis> <comando_composto>
-void declaração_de_função()
+void declaracao_de_funcao()
 {
-    consome('funcao');
+    consome(FUNCAO);
     tipo();
-    consome('identificador');
+    consome(IDENTIFICADOR);
     parametros_formais();
     declaracao_de_variaveis();
     comando_composto();
@@ -157,8 +162,8 @@ void declaração_de_função()
 //<declaracao_de_procedimento> ::= procedimento identificador <parametros_formais> <declaracao_de_variaveis> <comando_composto>
 void declaracao_de_procedimento()
 {
-    consome('procedimento');
-    consome('identificador');
+    consome(PROCEDIMENTO);
+    consome(IDENTIFICADOR);
     parametros_formais();
     declaracao_de_variaveis();
     comando_composto();
@@ -167,37 +172,37 @@ void declaracao_de_procedimento()
 //<tipo> ::= caractere | inteiro | logico
 void tipo()
 {
-    if (lookahead=='caractere')
+    if (lookahead==CARACTERE)
     {
-        consome('inteiro');
+        consome(CARACTERE);
     }
-    else if (lookahead=='inteiro')
+    else if (lookahead==INTEIRO)
     {
-        consome('inteiro');
+        consome(INTEIRO);
     }
     else
     {
-        consome('logico');
+        consome(LOGICO);
     }
 }
 
 //<parâmetros_formais> ::= ‘(’ <parâmetro_formal> { ‘;’ parâmetro_formal } ‘)’ | ‘(’ ‘)
 void parametros_formais()
 {
-    consome('(');
-    if (lookahead=='var'||lookahead=='identificador')
+    consome(ABRE_PAR);
+    if (lookahead==VAR||lookahead==IDENTIFICADOR)
     {
         parametro_formal();
-        while(lookahead==';')
+        while(lookahead==PONTO_VIRGULA)
         {
-            consome(';');
+            consome(PONTO_VIRGULA);
             parametro_formal
         }
-        consome(')');
+        consome(FECHA_PAR);
     }
     else
     {
-        consome(')');
+        consome(FECHA_PAR);
     }
     
 }
@@ -205,9 +210,9 @@ void parametros_formais()
 //<parâmetro_formal> ::= [var] <lista_variaveis>
 void parametro_formal()
 {
-    while (lookahead=='var')
+    if (lookahead==VAR)
     {
-        consome('var');
+        consome(VAR);
     }
     lista_variaveis();
 }
