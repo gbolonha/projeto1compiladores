@@ -105,6 +105,10 @@ void consome(TAtomo atomo); // implementado no analisador sintático
 
 int main()
 {
+    
+    info_atomo=obter_atomo();
+    lookahead=info_atomo.atomo;
+    programa();
     return 0;
 }
 
