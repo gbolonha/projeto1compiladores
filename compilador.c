@@ -30,7 +30,7 @@ typedef enum {
     CONSTINT,
     CONSTCHAR,
     COMENTARIO,
-
+    NAO,  
     // controle
     FIM_ARQUIVO
 } TAtomo;
@@ -89,7 +89,8 @@ char *strAtomo[] = {
     "identificador",    // 38
     "constint",         // 39
     "constchar",        // 40
-    "comentario",       // 41
+    "comentario", 
+    "nao",
     "fim_arquivo"       // 42
 };
 
@@ -412,9 +413,96 @@ void expressao_simples()
     }
 }
 //<operador_adição> ::= ‘+’ | ‘-’ | mod | ou 
+void operador_adicao()
+{
+    if (lookahead==MAIS)
+    {
+        consome(MAIS);
+    }
+    else if (lookahead==MENOS)
+    {
+        consome(MENOS);
+    }
+    else if (lookahead==MOD)
+    {
+        consome(MOD);
+    }
+    else
+    {
+        consome(OU);
+    }
+}
+
 
 //<termo> ::= <fator> { <operador_multiplicação> <fator> } 
+void termo()
+{
+    fator();
+    while (lookahead==MULT||lookahead==DIV||lookahead==E)
+    {
+        operador_multiplicacao();
+        fator();
+    }
+}
 
 //<operador_multiplicação> ::= ‘*’ | div | e  
+    //<operador_multiplicação> ::= ‘*’ | div | e  
+void operador_multiplicacao()
+{
+    if (lookahead==MULT)
+    {
+        consome(MULT);
+    }
+    else if (lookahead==DIV)
+    {
+        consome(DIV);
+    }
+    else
+    {
+        consome(E);
+    }
+}
 
 //<fator> ::= identificador [ ‘(’ <lista_expressão> ‘)’ ] | constint | constchar | ‘(’ <expressão> ‘)’ | ( ‘+’ | ‘-’ | nao ) <fator> | verdadeiro | falso
+
+void fator()
+{
+    if (lookahead==IDENTIFICADOR)
+    {
+        consome(IDENTIFICADOR);
+        if (lookahead==ABRE_PAR)
+        {
+            consome(ABRE_PAR);
+            lista_expressao();
+            consome(FECHA_PAR);
+        }
+    }
+    else if (lookahead==CONSTINT)
+    {
+        consome(CONSTINT);
+    }
+    else if (lookahead==CONSTCHAR)
+    {
+        consome(CONSTCHAR);
+    }
+    else if (lookahead==ABRE_PAR)
+    {
+        consome(ABRE_PAR);
+        expressao();
+        consome(FECHA_PAR);
+    }
+    else if (lookahead==MAIS||lookahead==MENOS||lookahead==NAO)
+    {
+        consome(lookahead);
+        fator();
+    }
+    else if(lookahead==VERDADEIRO)
+    {
+        consome(VERDADEIRO);
+    }
+    else
+    {
+        consome(FALSO);
+    }
+    
+}
