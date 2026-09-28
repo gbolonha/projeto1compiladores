@@ -6,8 +6,8 @@ Projeto desenvolvido para a disciplina de Compiladores. O objetivo deste trabalh
 
 ## Integrantes do Grupo
 
-* **Gabriel Teixeira Bolonha** — TIA/RA: 10426937
-* **Geovana Bomfim Rodrigues** — TIA/RA: 10410514
+* **Gabriel Teixeira Bolonha** — RA: 10426937
+* **Geovana Bomfim Rodrigues** — RA: 10410514
 
 ---
 
