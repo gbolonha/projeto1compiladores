@@ -18,3 +18,4 @@ Utilize o comando exato especificado no enunciado:
 
 ```bash
 gcc -Wall -Wno-unused-result -g -Og compilador.c -o compilador
+./compilador arquivo.txt
