@@ -158,6 +158,7 @@ void fator(void);
 
 char *buffer;
 char *inicio_buffer; // guarda o endereco original do malloc para o free()
+FILE *arquivo_global;
 char lexema[100];
 int contaLinha = 1;
 TInfoAtomo info_atomo;
@@ -166,6 +167,9 @@ TAtomo lookahead;
 void libera_buffer(void)
 {
     free(inicio_buffer);
+
+    if (arquivo_global != NULL)
+        fclose(arquivo_global);
 }
 
 int main(int argc, char *argv[])
@@ -179,11 +183,13 @@ int main(int argc, char *argv[])
     }
 
     arquivo = fopen(argv[1], "r");
+    
 
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo.\n");
         return 1;
     }
+    arquivo_global = arquivo;
 
     fseek(arquivo, 0, SEEK_END);
     tamanho = ftell(arquivo);
@@ -209,7 +215,11 @@ int main(int argc, char *argv[])
 
     printf("%d linhas analisadas, programa sintaticamente correto\n", contaLinha);
 
-    fclose(arquivo);
+   
+    arquivo = NULL;
+
+    free(inicio_buffer);
+    inicio_buffer = NULL;
 
     return 0; 
 }
