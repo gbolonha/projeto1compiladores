@@ -1,0 +1,8 @@
+algoritmo teste;
+
+var
+    x: inteiro;
+
+inicio
+    x := 12E2
+fim.
